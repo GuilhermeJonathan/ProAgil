@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ProAgil2.Api.Data;
 using ProAgil2.Api.Model;
 
@@ -20,19 +22,35 @@ namespace ProAgil2.Api.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Evento>> Get()
+        public async Task<IActionResult> Get()
         {
-
-            var eventos = _context.Eventos.ToList();
-            return eventos;
+            try
+            {
+                var eventos = await _context.Eventos.ToListAsync();
+                return Ok(eventos);
+            }
+            catch (Exception)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "Erro no banco de dados.");
+                throw;
+            }
         }
 
         // GET api/values/5
         [HttpGet("{id}")]
-        public ActionResult<Evento> Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
-            var eventos = _context.Eventos.FirstOrDefault(a => a.EventoId == id);
-            return eventos;
+            try
+            {
+                var eventos = await _context.Eventos.FirstOrDefaultAsync(a => a.EventoId == id);
+                return Ok(eventos);
+            }
+            catch (Exception)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "Erro no banco de dados.");
+                throw;
+            }
+            
         }
 
         // POST api/values
